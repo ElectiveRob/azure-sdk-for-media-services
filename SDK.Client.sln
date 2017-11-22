@@ -26,11 +26,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Tests.Stress", "test\net\stress\SDK.Client.Tests.Stress.csproj", "{0CD55683-0485-4630-89B5-54EA080E2FC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.BlobTransfer", "src\net\Client\Common\Common.BlobTransfer\SDK.Client.Common.BlobTransfer.csproj", "{F0C14570-44F9-4F3E-AC4F-D9965C4B1D06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.BlobTransfer", "src\net\Common.BlobTransfer\SDK.Client.Common.BlobTransfer.csproj", "{F0C14570-44F9-4F3E-AC4F-D9965C4B1D06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.FileEncryption", "src\net\Client\Common\Common.FileEncryption\SDK.Client.Common.FileEncryption.csproj", "{630D064C-8D3D-4419-BCC9-A61EF577A387}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.FileEncryption", "src\net\Common.FileEncryption\SDK.Client.Common.FileEncryption.csproj", "{630D064C-8D3D-4419-BCC9-A61EF577A387}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.Authentication", "src\net\Client\Common\Common.Authentication\SDK.Client.Common.Authentication.csproj", "{57005DBF-B478-4087-84DC-24441714D0F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.Authentication", "src\net\Common.Authentication\SDK.Client.Common.Authentication.csproj", "{57005DBF-B478-4087-84DC-24441714D0F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
