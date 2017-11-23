@@ -82,7 +82,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         mediaServicesResource,
                         _tokenCredentials.AzureEnvironment.MediaServicesSdkClientId,
                         _tokenCredentials.AzureEnvironment.MediaServicesSdkRedirectUri,
-                        new PlatformParameters(PromptBehavior.Auto)).Result;
+                        new PlatformParameters()).Result;
 
                 case AzureAdTokenCredentialType.ServicePrincipalWithClientSymmetricKey:
                     return  _authenticationContext.AcquireTokenAsync(mediaServicesResource, _tokenCredentials.ClientKey).Result;

@@ -100,7 +100,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public static string GetVideoSampleFilePath(TestContext testContext, string filepath)
         {
-            return Path.Combine(testContext.TestDeploymentDir, filepath);
+            return Path.Combine(Directory.GetCurrentDirectory(), filepath);
         }
     }
 }

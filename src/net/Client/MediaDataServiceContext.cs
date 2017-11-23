@@ -28,12 +28,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Wraps System.Data.Services.Client.DataServiceContext.
     /// </summary>
-    public class MediaDataServiceContext : IMediaDataServiceContext,IRetryPolicyAdapter
+    public class MediaDataServiceContext : IMediaDataServiceContext, IRetryPolicyAdapter
     {
         private readonly DataServiceContext _dataContext;
         private readonly MediaRetryPolicy _queryRetryPolicy;
 
-       
+
         private readonly ClientRequestIdAdapter _clientRequestIdAdapter;
 
         public MediaDataServiceContext(DataServiceContext dataContext, MediaRetryPolicy queryRetryPolicy, ClientRequestIdAdapter clientRequestAdapter)
@@ -105,7 +105,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             _dataContext.AttachTo(entitySetName, entity, etag);
         }
-        
+
         /// <summary>
         /// Changes the state of the specified object to be deleted in the System.Data.Services.Client.DataServiceContext.
         /// Remarks:
@@ -126,7 +126,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The results of the query operation.</returns>
         public IEnumerable<TElement> Execute<TElement>(Uri requestUri)
         {
-            return _dataContext.Execute<TElement>(requestUri);
+            var asyncResult = _dataContext.BeginExecute<TElement>(requestUri, ar => { }, null);
+            return _dataContext.EndExecute<TElement>(asyncResult);
         }
 
         /// <summary>
@@ -141,7 +142,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The response of the operation.</returns>
         public OperationResponse Execute(Uri requestUri, string httpMethod, params OperationParameter[] operationParameters)
         {
-            return _dataContext.Execute(requestUri, httpMethod, operationParameters);
+            var asyncResult = _dataContext.BeginExecute(requestUri, ar => { }, null, httpMethod, operationParameters);
+            return _dataContext.EndExecute(asyncResult);
         }
 
         /// <summary>
@@ -173,9 +175,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The response to the load operation.</returns>
         public QueryOperationResponse LoadProperty(object entity, string propertyName)
         {
-            return _dataContext.LoadProperty(entity, propertyName);
+            var asyncResult = _dataContext.BeginLoadProperty(entity, propertyName, ar => { }, null);
+            return _dataContext.EndLoadProperty(asyncResult);
         }
-        
+
         /// <summary>
         /// Changes the state of the specified object in the System.Data.Services.Client.DataServiceContext to System.Data.Services.Client.EntityStates.Modified.
         /// </summary>
@@ -239,7 +242,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// and errors that result from the call to System.Data.Services.Client.DataServiceContext.SaveChanges.Remarks.</returns>
         public IMediaDataServiceResponse SaveChanges()
         {
-            return new MediaDataServiceResponse(_dataContext.SaveChanges());
+            var asyncResult = _dataContext.BeginSaveChanges(ar => { }, null);
+            return new MediaDataServiceResponse(_dataContext.EndSaveChanges(asyncResult));
         }
 
         /// <summary>
@@ -387,7 +391,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Loads the property asynchronously.
         /// </summary>
-       /// <param name="entity">The entity.</param>
+        /// <param name="entity">The entity.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="nextLinkUri">The next link URI.</param>
         /// <param name="state">The state.</param>
@@ -408,7 +412,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return Task.Factory.FromAsync<DataServiceResponse>(_dataContext.BeginSaveChanges, _dataContext.EndSaveChanges, state)
                 .ContinueWith<IMediaDataServiceResponse>(t => WrapTask(t));
         }
-        
+
         /// <summary>
         /// Saves the changes asynchronously.
         /// </summary>
@@ -422,12 +426,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 _dataContext.EndSaveChanges,
                 options,
                 state);
-            return task.ContinueWith<IMediaDataServiceResponse>(t => WrapTask(t),TaskContinuationOptions.AttachedToParent);
+            return task.ContinueWith<IMediaDataServiceResponse>(t => WrapTask(t), TaskContinuationOptions.AttachedToParent);
         }
 
         public Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state, CancellationToken token)
         {
-            
+
             Task<DataServiceResponse> task = Task.Factory.FromAsync<SaveChangesOptions, DataServiceResponse>(
                _dataContext.BeginSaveChanges,
                _dataContext.EndSaveChanges,

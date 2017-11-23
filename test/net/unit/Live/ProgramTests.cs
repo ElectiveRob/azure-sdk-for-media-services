@@ -16,7 +16,6 @@
 
 using System;
 using System.Net;
-using System.Web.UI.WebControls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Moq;

@@ -145,7 +145,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         FileShare.Read
                         ))
                     {
-                        blob.DownloadToStream(fileStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext);
+                        blob.DownloadToStreamAsync(fileStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext).Wait();
                         if (fileEncryption != null)
                         {
                             using (MemoryStream msDecrypt = new MemoryStream())
@@ -302,55 +302,51 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             Interlocked.Increment(ref transferContext.NumInProgressUploadDownloads);
 
-            transferContext.Blob.BeginDownloadRangeToStream(
+            var downloadTask = transferContext.Blob.DownloadRangeToStreamAsync(
                 memoryStream,
                 startAndLength.Key,
                 startAndLength.Value,
                 AccessCondition.GenerateEmptyCondition(),
                 transferContext.BlobRequestOptions,
-                operationContext,
-                ar =>
+                operationContext);
+
+            SuccessfulOrRetryableResult wasWriteSuccessful = EndDownloadStream(transferContext, downloadTask);
+
+            Interlocked.Decrement(ref transferContext.NumInProgressUploadDownloads);
+
+            if (wasWriteSuccessful.IsRetryable)
+            {
+                BeginDownloadStream(transferContext, memoryStream, startAndLength, streamBuffer);
+                return;
+            }
+
+            if (!wasWriteSuccessful.IsSuccessful)
+            {
+                transferContext.MemoryManager.ReleaseBuffer(streamBuffer);
+                return;
+            }
+            Interlocked.Add(ref transferContext.BytesBlobIOCompleted, startAndLength.Value);
+
+            TryDownloadingBlocks(transferContext);
+
+            if (transferContext.ShouldDoFileIO)
+            {
+                transferContext.BlocksForFileIO[(int)(startAndLength.Key / transferContext.BlockSize)] = streamBuffer;
+            }
+            else
+            {
+                transferContext.MemoryManager.ReleaseBuffer(streamBuffer);
+
+                if (transferContext.BytesBlobIOCompleted >= transferContext.Length)
                 {
-
-                    SuccessfulOrRetryableResult wasWriteSuccessful = EndDownloadStream(transferContext, ar);
-
-                    Interlocked.Decrement(ref transferContext.NumInProgressUploadDownloads);
-
-                    if (wasWriteSuccessful.IsRetryable)
-                    {
-                        BeginDownloadStream(transferContext, memoryStream, startAndLength, streamBuffer);
-                        return;
-                    }
-
-                    if (!wasWriteSuccessful.IsSuccessful)
-                    {
-                        transferContext.MemoryManager.ReleaseBuffer(streamBuffer);
-                        return;
-                    }
-                    Interlocked.Add(ref transferContext.BytesBlobIOCompleted, startAndLength.Value);
-
-                    TryDownloadingBlocks(transferContext);
-
-                    if (transferContext.ShouldDoFileIO)
-                    {
-                        transferContext.BlocksForFileIO[(int)(startAndLength.Key / transferContext.BlockSize)] = streamBuffer;
-                    }
-                    else
-                    {
-                        transferContext.MemoryManager.ReleaseBuffer(streamBuffer);
-
-                        if (transferContext.BytesBlobIOCompleted >= transferContext.Length)
-                        {
-                            transferContext.IsComplete = true;
-                        }
-                    }
-                },
-                null);
+                    transferContext.IsComplete = true;
+                }
+            }
         }
 
-        protected virtual SuccessfulOrRetryableResult EndDownloadStream(BlobTransferContext transferContext, IAsyncResult ar)
+        protected virtual SuccessfulOrRetryableResult EndDownloadStream(BlobTransferContext transferContext, Task task)
         {
-            return IsActionSuccessfulOrRetryable(transferContext, () => transferContext.Blob.EndDownloadRangeToStream(ar));
+            return IsActionSuccessfulOrRetryable(transferContext, () => task.Wait());
         }
 
         private void DoSequentialWrite(
@@ -480,7 +476,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
             }
 
-            BlobPolicyActivationWait(() => blob.FetchAttributes(options: new BlobRequestOptions() { RetryPolicy = retryPolicy }));
+            BlobPolicyActivationWait(() => blob.FetchAttributesAsync(null, new BlobRequestOptions() { RetryPolicy = retryPolicy }, null).Wait());
 
             return blob;
         }

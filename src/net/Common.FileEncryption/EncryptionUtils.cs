@@ -156,8 +156,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (ce.Message.Contains("Keyset does not exist"))
                 {
-                    IdentityReference currentUser = WindowsIdentity.GetCurrent().Owner as IdentityReference;
-                    string message = string.Format(CultureInfo.CurrentCulture, "Unable to create the RSAOAEPKeyExchangeDeformatter likely due to the access permissions on the private key.  Check to see if the current user has access to the private key for the certificate with thumbprint={0}.  Current User is {1}.", cert.Thumbprint, currentUser.ToString());
+                    string message = string.Format(CultureInfo.CurrentCulture, "Unable to create the RSAOAEPKeyExchangeDeformatter likely due to the access permissions on the private key.  Check to see if the current user has access to the private key for the certificate with thumbprint={0}.", cert.Thumbprint);
                     throw new InvalidOperationException(message, ce);
                 }
                 else

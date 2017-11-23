@@ -16,7 +16,6 @@
 
 using System;
 using System.Globalization;
-using System.Web.UI;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {

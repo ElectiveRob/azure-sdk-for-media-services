@@ -45,7 +45,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                 context.AttachTo("Assets", asset);
                 context.DeleteObject(asset);
                 adapter.Adapt(context);
-                context.SaveChanges();
+                var asyncResult = context.BeginSaveChanges(ar => { }, null);
+                context.EndSaveChanges(asyncResult);
             }
             catch (DataServiceRequestException ex)
             {

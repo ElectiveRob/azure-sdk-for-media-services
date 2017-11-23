@@ -123,10 +123,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     // For dates that contain both the start and end of the query range (i.e. the query does not cross any UTC
                     // day boundaries), give a range of row keys within the partition.
 
-                    Expression<Func<DynamicTableEntity, bool>> filter = x =>
-                        x.PartitionKey == partitionKey &&
-                        string.Compare(x.RowKey, startMinRowKey, StringComparison.Ordinal) < 0 &&
-                        string.Compare(x.RowKey, endMaxRowKey, StringComparison.Ordinal) > 0;
+                    //Expression<Func<DynamicTableEntity, bool>> filter = x =>
+                    //    x.PartitionKey == partitionKey &&
+                    //    string.Compare(x.RowKey, startMinRowKey, StringComparison.Ordinal) < 0 &&
+                    //    string.Compare(x.RowKey, endMaxRowKey, StringComparison.Ordinal) > 0;
+
+                    var rowKeyFilter = TableQuery.CombineFilters(
+                        filterA: TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.RowKey), QueryComparisons.LessThan, startMinRowKey),
+                        operatorString: TableOperators.And, 
+                        filterB: TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.RowKey), QueryComparisons.GreaterThanOrEqual, endMaxRowKey));
+
+                    var filter = TableQuery.CombineFilters(
+                        filterA: TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.PartitionKey), QueryComparisons.Equal, partitionKey),
+                        operatorString: TableOperators.And,
+                        filterB: rowKeyFilter);
 
                     return RetrieveData(uris, filter);
                 }
@@ -134,31 +144,44 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     // For dates that contain the start of the query range (i.e. the query starts on this date and continues to the
                     // next day), specify the minimum row key.
-                    Expression<Func<DynamicTableEntity, bool>> filter = x =>
-                        x.PartitionKey == partitionKey &&
-                        string.Compare(x.RowKey, startMinRowKey, StringComparison.Ordinal) < 0;
+                    //Expression<Func<DynamicTableEntity, bool>> filter = x =>
+                    //    x.PartitionKey == partitionKey &&
+                    //    string.Compare(x.RowKey, startMinRowKey, StringComparison.Ordinal) < 0;
+
+                    var filter = TableQuery.CombineFilters(
+                        filterA: TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.PartitionKey), QueryComparisons.Equal, partitionKey),
+                        operatorString: TableOperators.And,
+                        filterB: TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.RowKey), QueryComparisons.LessThan, startMinRowKey));
+
                     return RetrieveData(uris, filter);
                 }
                 else if (endOfRange)
                 {
                     // For dates that contain the end of the query range (i.e. the query starts on a previous day and continues through
                     // part of this day), specify the maximum row key.
-                    Expression<Func<DynamicTableEntity, bool>> filter = x =>
-                        x.PartitionKey == partitionKey &&
-                        string.Compare(x.RowKey, endMaxRowKey, StringComparison.Ordinal) > 0;
+                    //Expression<Func<DynamicTableEntity, bool>> filter = x =>
+                    //    x.PartitionKey == partitionKey &&
+                    //    string.Compare(x.RowKey, endMaxRowKey, StringComparison.Ordinal) > 0;
+
+                    var filter = TableQuery.CombineFilters(
+                        filterA: TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.PartitionKey), QueryComparisons.Equal, partitionKey),
+                        operatorString: TableOperators.And,
+                        filterB: TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.RowKey), QueryComparisons.GreaterThan, endMaxRowKey));
+
                     return RetrieveData(uris, filter);
                 }
                 else
                 {
                     // For dates where the query does not start or end (i.e. whole days within the query), filter only on the
                     // partition key.
-                    Expression<Func<DynamicTableEntity, bool>> filter = x => x.PartitionKey == partitionKey;
+                    //Expression<Func<DynamicTableEntity, bool>> filter = x => x.PartitionKey == partitionKey;
+                    var filter = TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.PartitionKey), QueryComparisons.Equal, partitionKey);
                     return RetrieveData(uris, filter);
                 }
             });
         }
 
-        private static IEnumerable<DynamicTableEntity> RetrieveData(MonitoringSasUri uri, Expression<Func<DynamicTableEntity, bool>> filter)
+        private static IEnumerable<DynamicTableEntity> RetrieveData(MonitoringSasUri uri, string filter)
         {
             List<DynamicTableEntity> records = null;
 
@@ -170,12 +193,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             foreach (var url in uri.SasUris)
             {
                 CloudTable table = new CloudTable(new Uri(url));
+                
+                //records = table
+                var query = new TableQuery<DynamicTableEntity>()
+                    .Where(filter);
 
-                records = table
-                    .CreateQuery<DynamicTableEntity>()
-                    .Where(filter)
-                    .SkipTableNotFoundErrors()
-                    .ToList();
+                records = table.ExecuteQuerySegmentedAsync(query, null).Result.ToList();
 
                 if (records.Count() != 0)
                 {

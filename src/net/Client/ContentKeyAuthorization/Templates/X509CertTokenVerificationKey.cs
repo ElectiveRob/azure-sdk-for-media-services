@@ -16,7 +16,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IdentityModel.Tokens;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 
@@ -27,12 +26,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     {
         private static object _lock = new object();
         private X509Certificate2 _x509Certificate;
-        private X509SecurityToken _securityToken;
         private bool _disposed = false;
 
         public X509CertTokenVerificationKey()
         {
-
+            
         }
 
         public X509CertTokenVerificationKey(X509Certificate2 cert)
@@ -43,7 +41,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                     if (_x509Certificate == null)
                     {
                         _x509Certificate = cert;
-                        _securityToken = new X509SecurityToken(_x509Certificate);
                         base.RawBody = _x509Certificate.RawData;
                     }
                 }
@@ -88,21 +85,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             }
         }
 
-        public X509SecurityToken X509SecurityToken
-        {
-            get
-            {
-                if (this._securityToken != null)
-                {
-                    return _securityToken;
-                }
-
-                if (this.RawBody == null) return null;
-                InitCertAndToken();
-                return _securityToken;
-            }
-        }
-
         private void InitCertAndToken()
         {
             if (_x509Certificate == null)
@@ -112,7 +94,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                     if (_x509Certificate == null)
                     {
                         _x509Certificate = new X509Certificate2(this.RawBody);
-                        _securityToken = new X509SecurityToken(_x509Certificate);
                     }
                 }
             }
@@ -131,10 +112,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             {
                 lock (_lock)
                 {
-                    if (_securityToken != null)
-                    {
-                        _securityToken.Dispose();
-                    }
                     _x509Certificate = null;
                 }
                 _disposed = true;

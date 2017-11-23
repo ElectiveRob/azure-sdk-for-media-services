@@ -106,7 +106,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 transferContext.FileEncryption = fileEncryption;
                 if (stream.Length == 0)
                 {
-                    blob.UploadFromByteArray(new byte[1], 0, 0, options: blobRequestOptions);
+                    blob.UploadFromByteArrayAsync(new byte[1], 0, 0, null, blobRequestOptions, null).Wait();
                 }
                 else if (stream.Length < cloudBlockBlobUploadDownloadSizeLimit)
                 {
@@ -127,7 +127,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                         using (var uploadMemoryStream = new MemoryStream(fileContent))
                         {
-                            blob.UploadFromStream(uploadMemoryStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext);
+                            blob.UploadFromStreamAsync(uploadMemoryStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext).Wait();
                         }
                     }
                     InvokeProgressCallback(transferContext, stream.Length, stream.Length);
@@ -300,47 +300,43 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             memoryStream.SetLength(startAndLength.Value);
 
-            transferContext.Blob.BeginPutBlock(
+            var putTask = transferContext.Blob.PutBlockAsync(
                 blockId,
                 memoryStream,
                 null,
                 AccessCondition.GenerateEmptyCondition(),
                 transferContext.BlobRequestOptions,
-                operationContext,
-                ar =>
-                {
-                    SuccessfulOrRetryableResult wasWriteSuccessful = EndPutBlock(transferContext, ar);
-                    Interlocked.Decrement(ref transferContext.NumInProgressUploadDownloads);
+                operationContext);
 
-                    if (wasWriteSuccessful.IsRetryable)
-                    {
-                        BeginUploadStream(transferContext, startAndLength, memoryStream, streamBuffer);
-                        return;
-                    }
+            SuccessfulOrRetryableResult wasWriteSuccessful = EndPutBlock(transferContext, putTask);
+            Interlocked.Decrement(ref transferContext.NumInProgressUploadDownloads);
 
-                    transferContext.MemoryManager.ReleaseBuffer(streamBuffer);
+            if (wasWriteSuccessful.IsRetryable)
+            {
+                BeginUploadStream(transferContext, startAndLength, memoryStream, streamBuffer);
+                return;
+            }
 
-                    if (!wasWriteSuccessful.IsSuccessful)
-                    {
-                        return;
-                    }
+            transferContext.MemoryManager.ReleaseBuffer(streamBuffer);
 
-                    Interlocked.Add(ref transferContext.BytesBlobIOCompleted, startAndLength.Value);
+            if (!wasWriteSuccessful.IsSuccessful)
+            {
+                return;
+            }
 
-                    InvokeProgressCallback(transferContext, transferContext.BytesBlobIOCompleted, startAndLength.Value);
+            Interlocked.Add(ref transferContext.BytesBlobIOCompleted, startAndLength.Value);
 
-                    if (transferContext.BytesBlobIOCompleted >= transferContext.Length)
-                    {
-                        BeginPutBlockList(transferContext);
-                    }
+            InvokeProgressCallback(transferContext, transferContext.BytesBlobIOCompleted, startAndLength.Value);
 
-                },
-                state: null);
+            if (transferContext.BytesBlobIOCompleted >= transferContext.Length)
+            {
+                BeginPutBlockList(transferContext);
+            }
         }
 
-        protected virtual SuccessfulOrRetryableResult EndPutBlock(BlobTransferContext transferContext, IAsyncResult ar)
+        protected virtual SuccessfulOrRetryableResult EndPutBlock(BlobTransferContext transferContext, Task putTask)
         {
-            return IsActionSuccessfulOrRetryable(transferContext, () => transferContext.Blob.EndPutBlock(ar));
+            return IsActionSuccessfulOrRetryable(transferContext, () => putTask.Wait());
         }
 
         private void TryUploadingBlocks(BlobTransferContext transferContext)
@@ -402,30 +398,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         Encoding.ASCII.GetBytes(string.Format(CultureInfo.InvariantCulture, "BlockId{0:d7}", i))));
             }
 
-            transferContext.Blob.BeginPutBlockList(
+            var putTask = transferContext.Blob.PutBlockListAsync(
                 blockids,
                 AccessCondition.GenerateEmptyCondition(),
                 transferContext.BlobRequestOptions,
-                operationContext,
-                ar =>
-                {
-                    SuccessfulOrRetryableResult wasWriteSuccessful = EndPutBlockList(transferContext, ar);
-                    Interlocked.Decrement(ref transferContext.NumInProgressUploadDownloads);
+                operationContext);
 
-                    if (wasWriteSuccessful.IsRetryable)
-                    {
-                        BeginPutBlockList(transferContext);
-                        return;
-                    }
+            SuccessfulOrRetryableResult wasWriteSuccessful = EndPutBlockList(transferContext, putTask);
+            Interlocked.Decrement(ref transferContext.NumInProgressUploadDownloads);
 
-                    transferContext.IsComplete = true;
-                },
-                state: null);
+            if (wasWriteSuccessful.IsRetryable)
+            {
+                BeginPutBlockList(transferContext);
+                return;
+            }
+
+            transferContext.IsComplete = true;
         }
 
-        private SuccessfulOrRetryableResult EndPutBlockList(BlobTransferContext transferContext, IAsyncResult ar)
+        private SuccessfulOrRetryableResult EndPutBlockList(BlobTransferContext transferContext, Task task)
         {
-            return IsActionSuccessfulOrRetryable(transferContext, () => transferContext.Blob.EndPutBlockList(ar));
+            return IsActionSuccessfulOrRetryable(transferContext, () => task.Wait());
         }
 
         private void DoSequentialRead(

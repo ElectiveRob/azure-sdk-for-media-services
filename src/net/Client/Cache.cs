@@ -15,7 +15,7 @@
 // </license>
 
 using System;
-using System.Runtime.Caching;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -27,7 +27,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class Cache<T> : IDisposable
     {
         private object _refreshLock = new object();
-        private MemoryCache _cache = new MemoryCache("RequestCache");
+        private MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
         /// <summary>
         /// Gets cached element or caches new if it doesn't exist.
@@ -60,7 +60,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     }
 
                     result = valueFactory();
-                    _cache.Add(key, result, new DateTimeOffset(expirationFactory(), TimeSpan.Zero));
+                    var cacheEntry = _cache.CreateEntry(key);
+                    cacheEntry.Value = result;
+                    cacheEntry.AbsoluteExpiration = new DateTimeOffset(expirationFactory(), TimeSpan.Zero);
                 }
 
                 return result;
