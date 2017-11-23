@@ -4,6 +4,11 @@
 	<ProjectGuid>{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}</ProjectGuid>
 	<AssemblyName>Microsoft.WindowsAzure.MediaServices.Client.Tests.Scenario</AssemblyName>
 	<RootNamespace>Microsoft.WindowsAzure.MediaServices.Client.Tests</RootNamespace>
+	<Version>4.1.0.0</Version>
+	<NeutralLanguage>en-US</NeutralLanguage>
+	<Company>Microsoft</Company>
+	<Product>Windows Azure Media Services</Product>
+	<Copyright>Copyright © 2012 Microsoft Corp.</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Common\**" />
