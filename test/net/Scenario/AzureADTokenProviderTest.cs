@@ -48,7 +48,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private AuthenticationResult GetToken()
         {
             string upn = string.Format("{0}@{1}", ConfigurationManager.AppSettings["MediaServiceAccountName"], ConfigurationManager.AppSettings["AadTenant"]);
-            var credentials = new UserPasswordCredential(upn, ConfigurationManager.AppSettings["MediaServiceAccountKey"]);
+            var credentials = new UserCredential(upn);
             //TODO: May be use the graph API to find the SDK App from the tenant by name or by URI.
             var clientId = ConfigurationManager.AppSettings["AadClientId"];
             var result = _context.AcquireTokenAsync(

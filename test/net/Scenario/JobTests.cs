@@ -25,7 +25,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.UI;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1115,7 +1114,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string endPointAddress = Guid.NewGuid().ToString();
             CloudQueueClient client = CloudStorageAccount.Parse(WindowsAzureMediaServicesTestConfiguration.ClientStorageConnectionString).CreateCloudQueueClient();
             CloudQueue queue = client.GetQueueReference(endPointAddress);
-            queue.CreateIfNotExists();
+            queue.CreateIfNotExistsAsync().Wait();
             string endPointName = Guid.NewGuid().ToString();
             INotificationEndPoint notificationEndPoint = _mediaContext.NotificationEndPoints.Create(endPointName, NotificationEndPointType.AzureQueue, endPointAddress);
             Assert.IsNotNull(notificationEndPoint);
@@ -1139,8 +1138,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Thread.Sleep((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
 
             Assert.IsNotNull(queue);
-            Assert.IsTrue(queue.Exists());
-            IEnumerable<CloudQueueMessage> messages = queue.GetMessages(10);
+            Assert.IsTrue(queue.ExistsAsync().Result);
+            IEnumerable<CloudQueueMessage> messages = queue.GetMessagesAsync(10).Result;
             Assert.IsTrue(messages.Any());
             Assert.AreEqual(4, messages.Count(), "Expecting to have 4 notifications messages");
 

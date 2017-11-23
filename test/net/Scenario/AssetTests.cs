@@ -247,11 +247,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var containername = Guid.NewGuid().ToString();
             var client = storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containername);
-            container.CreateIfNotExists();
+            container.CreateIfNotExistsAsync().Wait();
 
             var blobReference = "ShouldCreateAssetFileFromNetworkStream_" + Path.GetFileName(_smallWmv);
             var blob = container.GetBlockBlobReference(blobReference);
-            blob.UploadFromFile(_smallWmv, FileMode.Open);
+            blob.UploadFromFileAsync(_smallWmv).Wait();
 
             var downloadBlob = container.GetBlockBlobReference(blobReference);
 
@@ -270,7 +270,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Assert.AreEqual(BlobTransferType.Upload, args.TransferType,
                     "file.UploadAsync Transfer completed expected BlobTransferType is Upload");
             };
-            using (var stream = downloadBlob.OpenRead())
+            using (var stream = downloadBlob.OpenReadAsync().Result)
             {
                 file.UploadAsync(stream, blobTransferClient, locator, CancellationToken.None).Wait();
             }
@@ -290,8 +290,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyAndDownloadAsset(asset, 1, _smallWmv, true, false);
            
             // cleanup; what if the assert fails
-            downloadBlob.Delete();
-            container.Delete();
+            downloadBlob.DeleteAsync().Wait();
+            container.DeleteAsync().Wait();
         }
 
         [TestMethod]
@@ -1048,7 +1048,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string containername = asset.Id.Replace("nb:cid:UUID:", "asset-");
             var client = storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containername);
-            Assert.IsTrue(container.Exists(), "Asset container {0} can't be found", container);
+            Assert.IsTrue(container.ExistsAsync().Result, "Asset container {0} can't be found", container);
 
 
         }
@@ -1154,7 +1154,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string assetUri = asset.Uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
             var client = storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containername);
-            Assert.IsTrue(container.Exists(), "Asset container {0} can't be found", container);
+            Assert.IsTrue(container.ExistsAsync().Result, "Asset container {0} can't be found", container);
 
             foreach (var assetFile in asset.AssetFiles)
             {
@@ -1163,9 +1163,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 try
                 {
-                    var blob = container.GetBlobReferenceFromServer(assetFile.Name);
-                    Assert.IsTrue(blob.Exists(), "Blob for asset file is not found in corresponding container");
-                    blob.FetchAttributes();
+                    var blob = container.GetBlobReferenceFromServerAsync(assetFile.Name).Result;
+                    Assert.IsTrue(blob.ExistsAsync().Result, "Blob for asset file is not found in corresponding container");
+                    blob.FetchAttributesAsync().Wait();
 
                     //Downloading using WAMS SDK
                     assetFile.DownloadProgressChanged += AssetTests_OnDownloadProgress;
@@ -1193,7 +1193,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     {
                         //Downloading Using Storage SDK
                         var stream = File.OpenWrite(downloadPathForStorageSdk);
-                        blob.DownloadToStream(stream);
+                        blob.DownloadToStreamAsync(stream).Wait();
                         stream.Close();
                         stream.Dispose();
 

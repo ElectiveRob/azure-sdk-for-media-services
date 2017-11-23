@@ -20,11 +20,13 @@ using System.Configuration;
 using System.Data.Services.Client;
 using System.Globalization;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.Serialization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
@@ -293,7 +295,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 contentKey = CreateTestKey(_mediaContext, ContentKeyType.EnvelopeEncryption, out expectedKey);
 
                 var templatex509Certificate2 = new X509Certificate2("amscer.pfx", "AMSGIT");
-                SigningCredentials cred = new X509SigningCredentials(templatex509Certificate2);
+                var securityKey = new X509SecurityKey(templatex509Certificate2);
+                SigningCredentials cred = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256Signature);
+
 
                 TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
                 tokenRestrictionTemplate.PrimaryVerificationKey = new X509CertTokenVerificationKey(templatex509Certificate2);

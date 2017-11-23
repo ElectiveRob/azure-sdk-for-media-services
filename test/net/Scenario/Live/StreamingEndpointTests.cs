@@ -174,19 +174,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 var partitionKey = $"{accountId}_{streamingEndpointId.ToString("N")}";
                 var testData = GetTestData(partitionKey , streamingEndpointId, endDate.Date);
 
-                table1.CreateIfNotExists();
+                table1.CreateIfNotExistsAsync().Wait();
                 var op1 = new TableBatchOperation();
                 op1.Insert(testData[0]);
                 op1.Insert(testData[1]);
-                table1.ExecuteBatch(op1);
+                table1.ExecuteBatchAsync(op1).Wait();
 
                 TestTableNotExists(dataCache, testData, endDate.Date.Add(TimeOfDay), streamingEndpointId);
 
-                table2.CreateIfNotExists();
+                table2.CreateIfNotExistsAsync().Wait();
                 var op2 = new TableBatchOperation();
                 op2.Insert(testData[2]);
                 op2.Insert(testData[3]);
-                table2.ExecuteBatch(op2);
+                table2.ExecuteBatchAsync(op2).Wait();
 
                 // case 1: both start and end time are on the same day
                 TestQuery1(dataCache, testData, endDate.Date.Add(TimeOfDay), streamingEndpointId);
@@ -197,9 +197,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 _mediaContext.StreamingEndpoints.Where(s => s.Id == streamingEndpoint.Id).Single().Delete();
 
-                table1?.DeleteIfExists();
+                table1?.DeleteIfExistsAsync().Wait();
 
-                table2?.DeleteIfExists();
+                table2?.DeleteIfExistsAsync().Wait();
             }
         }
 

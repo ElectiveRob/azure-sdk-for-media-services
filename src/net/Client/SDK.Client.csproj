@@ -3,7 +3,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
 	<ProjectGuid>{E194B46E-9063-4CFA-85FC-51E5AAD55586}</ProjectGuid>
 	<RootNamespace>Microsoft.WindowsAzure.MediaServices.Client</RootNamespace>
-	<AssemblyName>SDK.ClientMicrosoft.WindowsAzure.MediaServices.Client</AssemblyName>
+	<AssemblyName>Microsoft.WindowsAzure.MediaServices.Client</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Common\**" />
