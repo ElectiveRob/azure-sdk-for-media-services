@@ -48,7 +48,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                 var asyncResult = context.BeginSaveChanges(ar => { }, null);
                 context.EndSaveChanges(asyncResult);
             }
-            catch (DataServiceRequestException ex)
+            catch (InvalidOperationException ex) when (ex.InnerException is DataServiceTransportException)
             {
                 Debug.WriteLine(ex.Message);
             }

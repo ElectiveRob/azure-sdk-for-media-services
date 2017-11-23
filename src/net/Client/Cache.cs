@@ -60,9 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     }
 
                     result = valueFactory();
-                    var cacheEntry = _cache.CreateEntry(key);
-                    cacheEntry.Value = result;
-                    cacheEntry.AbsoluteExpiration = new DateTimeOffset(expirationFactory(), TimeSpan.Zero);
+                    _cache.Set(key, result, new DateTimeOffset(expirationFactory(), TimeSpan.Zero));
                 }
 
                 return result;

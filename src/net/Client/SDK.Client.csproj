@@ -18,7 +18,6 @@
     <PackageReference Include="Microsoft.Azure.KeyVault.Core" Version="2.0.4" />
     <PackageReference Include="Microsoft.Data.Services.Client" Version="5.8.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocol.Extensions" Version="1.0.4.403061554" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.0-preview2-41113220915" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.5.0-preview1-25914-04" />
     <PackageReference Include="TransientFaultHandling.Core" Version="5.1.1209.1" />

@@ -120,9 +120,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("keyData");
             }
 
-            RSACryptoServiceProvider rsaPublicKey = cert.PublicKey.Key as RSACryptoServiceProvider;
-
-            RSAOAEPKeyExchangeFormatter keyFormatter = new RSAOAEPKeyExchangeFormatter(rsaPublicKey);
+            RSAOAEPKeyExchangeFormatter keyFormatter = new RSAOAEPKeyExchangeFormatter(cert.PublicKey.Key);
 
             return keyFormatter.CreateKeyExchange(keyData);
         }

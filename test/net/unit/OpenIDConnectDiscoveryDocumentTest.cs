@@ -15,19 +15,17 @@
 // </license>
 
 
-using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
-using Moq;
 using Microsoft.IdentityModel.Protocols;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
@@ -51,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
              ]
             }";
 
-            JsonWebKey jsonWebKey = FetchAndValidateJsonWebKeyWithCommonProperties(keysResponse);
+            Microsoft.IdentityModel.Tokens.JsonWebKey jsonWebKey = FetchAndValidateJsonWebKeyWithCommonProperties(keysResponse);
             Assert.AreEqual(0,jsonWebKey.X5c.Count, "x5c should not contain elements ");
             Assert.IsNull(jsonWebKey.X5t, "x5t field should be null");
 
@@ -84,11 +82,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
            
         }
 
-        private static JsonWebKey FetchAndValidateJsonWebKeyWithCommonProperties(string keysResponse)
+        private static Microsoft.IdentityModel.Tokens.JsonWebKey FetchAndValidateJsonWebKeyWithCommonProperties(string keysResponse)
         {
-                    
-           
-            Microsoft.IdentityModel.Protocols.OpenIdConnectConfiguration config;
+            OpenIdConnectConfiguration config;
             System.Threading.CancellationTokenSource src = new System.Threading.CancellationTokenSource();
             TestDocumentRetriever retriver = new TestDocumentRetriever("{\"jwks_uri\": \"secondary\"}", keysResponse);            
             
@@ -132,7 +128,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                 ]
             }";
 
-            JsonWebKey jsonWebKey = FetchAndValidateJsonWebKeyWithCommonProperties(keysResponse);
+            Microsoft.IdentityModel.Tokens.JsonWebKey jsonWebKey = FetchAndValidateJsonWebKeyWithCommonProperties(keysResponse);
 
             X509CertTokenVerificationKey tokenVerificationKey = jsonWebKey.AsTokenVerificationKey() as X509CertTokenVerificationKey;
             Assert.IsNotNull(tokenVerificationKey);

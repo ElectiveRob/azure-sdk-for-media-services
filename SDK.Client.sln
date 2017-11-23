@@ -32,8 +32,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDK.Client.Common.FileEncry
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDK.Client.Common.Authentication", "src\net\Common.Authentication\SDK.Client.Common.Authentication.csproj", "{57005DBF-B478-4087-84DC-24441714D0F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Coverage|Any CPU = Coverage|Any CPU
@@ -247,42 +245,12 @@ Global
 		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|x64.Build.0 = Release|Any CPU
 		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|x86.ActiveCfg = Release|Any CPU
 		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|x86.Build.0 = Release|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Coverage|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Coverage|Any CPU.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Coverage|x64.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Coverage|x64.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Coverage|x86.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Coverage|x86.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Debug|x64.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Debug|x86.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.IncrementVersion|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.IncrementVersion|Any CPU.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.IncrementVersion|x64.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.IncrementVersion|x64.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.IncrementVersion|x86.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.IncrementVersion|x86.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Release|x64.ActiveCfg = Release|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Release|x64.Build.0 = Release|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Release|x86.ActiveCfg = Release|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Release|x86.Build.0 = Release|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Stage|Any CPU.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Stage|x64.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Stage|x64.Build.0 = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Stage|x86.ActiveCfg = Debug|Any CPU
-		{3AC9D88D-CAC3-496D-90F8-8B92D18A030E}.Stage|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4
 		SolutionGuid = {FA6765D4-81FF-4750-AB5B-DDBA2EFDE1D9}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4
 	EndGlobalSection
 EndGlobal
