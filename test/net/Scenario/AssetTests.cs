@@ -892,13 +892,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Media\SmallMP41.mp4", "Content")]
+        //[DeploymentItem(@".\Media\SmallMP41.mp4", "Content")] //not supported in .net core
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         public void ShouldCreateAssetWithSingleFile()
         {
-            string assetFilePath = @"Content\SmallMP41.mp4";
+            string assetFilePath = @"Media\SmallMP41.mp4";
 
             //In this case isPrimary is not set in the asset by passing false to CreateAsset.
             IAsset asset = CreateAsset(_mediaContext, Path.GetFullPath(assetFilePath), AssetCreationOptions.None,false);
@@ -918,7 +918,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@".\Resources\TestFiles", "TestFiles")]
         public void ShouldCreateAssetAsyncWithMultipleFiles()
         {
-            string[] files = Directory.GetFiles("TestFiles");
+            string[] files = Directory.GetFiles("Resources\\TestFiles");
 
             IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.None);
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
@@ -974,11 +974,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        //[DeploymentItem(@".\Resources\interview.wmv", "Content")] //not supported in .net core
         [TestCategory("Bvt")]
         public void ShouldUpdateAssetNameAndAlternateId()
         {
-            string fileName = @"Content\interview.wmv";
+            string fileName = @"Resources\interview.wmv";
 
             IAsset asset = CreateAsset(_mediaContext, Path.GetFullPath(fileName), AssetCreationOptions.CommonEncryptionProtected);
 

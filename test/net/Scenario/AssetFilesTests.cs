@@ -259,7 +259,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyAndDownloadAssetFileNTimes(assetFile, asset,100,0,true);
         }
         [TestMethod]
-        [Timeout(60000)]
+        [Timeout(120000)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [ExpectedException(typeof(StorageException))]
         public void ShouldThrowForbiddenExceptionWhenExpired()
@@ -275,7 +275,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
             catch (AggregateException exception)
             {
-                Assert.IsTrue(exception.InnerException.Message.Contains("The remote server returned an error: (403) Forbidden."));
+                Assert.IsTrue(exception.InnerException.Message.Contains("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature."));
                 throw exception.InnerException;
             }
         }

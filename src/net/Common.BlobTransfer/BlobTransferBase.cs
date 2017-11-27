@@ -16,8 +16,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using Microsoft.WindowsAzure.Storage;
@@ -29,10 +31,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private const int SpeedCalculatorCapacity = 100;
         private const int MaxSasSignatureRetry = 30;
-		private readonly TimeSpan SasSignatureRetryTime = TimeSpan.FromSeconds(1);
-		private readonly TimeSpan SasPolicyActivationMaxTime = TimeSpan.FromSeconds(30);
+        private readonly TimeSpan SasSignatureRetryTime = TimeSpan.FromSeconds(1);
+        private readonly TimeSpan SasPolicyActivationMaxTime = TimeSpan.FromSeconds(30);
         private readonly TimeSpan SasPolicyActivationMaxTimeThreshold = TimeSpan.FromSeconds(5);
-        private readonly BlobTransferSpeedCalculator _uploadDownloadSpeedCalculator = 
+        private readonly BlobTransferSpeedCalculator _uploadDownloadSpeedCalculator =
             new BlobTransferSpeedCalculator(SpeedCalculatorCapacity);
         protected readonly long cloudBlockBlobUploadDownloadSizeLimit = 32 * 1024 * 1024;
         public event EventHandler<BlobTransferCompleteEventArgs> TransferCompleted;
@@ -52,7 +54,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected void SetConnectionLimits(Uri url, int connectionLimit)
         {
-            ServicePointModifier.SetConnectionPropertiesForSmallPayloads(url,connectionLimit);
+            ServicePointModifier.SetConnectionPropertiesForSmallPayloads(url, connectionLimit);
         }
 
         protected struct SuccessfulOrRetryableResult
@@ -72,7 +74,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             public override bool Equals(object obj)
             {
-                return obj is SuccessfulOrRetryableResult && this == (SuccessfulOrRetryableResult) obj;
+                return obj is SuccessfulOrRetryableResult && this == (SuccessfulOrRetryableResult)obj;
             }
 
             public override int GetHashCode()
@@ -82,7 +84,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         protected SuccessfulOrRetryableResult IsActionSuccessfulOrRetryable<T>(
-            BlobTransferContext transferContext, 
+            BlobTransferContext transferContext,
             Func<T> action,
             out T returnValue)
         {
@@ -108,7 +110,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 throw new ArgumentNullException("action");
             }
-            SuccessfulOrRetryableResult result = 
+            SuccessfulOrRetryableResult result =
                 new SuccessfulOrRetryableResult
                 {
                     IsRetryable = false,
@@ -141,12 +143,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                             if (transferContext.SasRetryCount > MaxSasSignatureRetry)
                             {
-                                transferContext.Exceptions.Add(exception); 
+                                transferContext.Exceptions.Add(exception);
                                 transferContext.IsComplete = true;
                                 return result;
                             }
 
-							Thread.Sleep(SasSignatureRetryTime);
+                            Thread.Sleep(SasSignatureRetryTime);
                             result.IsRetryable = true;
                             return result;
                         }
@@ -174,7 +176,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             BlobTransferProgressChangedEventArgs eArgs = new BlobTransferProgressChangedEventArgs(
                 bytesProcessed,
-				lastBlockSize,
+                lastBlockSize,
                 transferContext.Length,
                 progress,
                 speed,
@@ -285,36 +287,52 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-		protected void BlobPolicyActivationWait(Action request)
-		{
-			var stopwatch = new System.Diagnostics.Stopwatch();
-			stopwatch.Start();
+        protected void BlobPolicyActivationWait(Action request)
+        {
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
             while (stopwatch.Elapsed < SasPolicyActivationMaxTime + SasPolicyActivationMaxTimeThreshold)
-			{
-				try
-				{
-					request();
-					break;
-				}
-				catch (StorageException x)
-				{
-                    WebException webException = x.FindInnerException<WebException>();
+            {
+                try
+                {
+                    request();
 
-					if (webException == null || !(webException.Response is HttpWebResponse))
-					{
-						throw;
-					}
-					var status = ((HttpWebResponse)webException.Response).StatusCode;
-                    //Retrying only for forbidden exceptions due to a locator issue.
-                    //After SasPolicyActivationTime, we need to rethrow the forbidden exception so that 
-                    //necessary cleanup is done and goes to the exception callback.
-                    if ((status != HttpStatusCode.Forbidden) || (stopwatch.Elapsed > SasPolicyActivationMaxTime))
+                    break;
+                }
+                catch (AggregateException x)
+                {
+                    StorageException storageException = x.FindInnerException<StorageException>();
+
+                    if (!HandleForbiddenException(storageException, stopwatch))
                     {
                         throw;
                     }
-                    Thread.Sleep(SasSignatureRetryTime);
-				}
-			}
-		}
+                }
+                catch (StorageException x)
+                {
+                    if (!HandleForbiddenException(x, stopwatch))
+                    {
+                        throw;
+                    }
+                }
+            }
+        }
+
+        private bool HandleForbiddenException(StorageException storageException, Stopwatch stopwatch)
+        {
+            if (storageException == null)
+            {
+                return false;
+            }
+            //Retrying only for forbidden exceptions due to a locator issue.
+            //After SasPolicyActivationTime, we need to rethrow the forbidden exception so that 
+            //necessary cleanup is done and goes to the exception callback.
+            if (storageException.RequestInformation.HttpStatusCode != ((int)HttpStatusCode.Forbidden) || (stopwatch.Elapsed > SasPolicyActivationMaxTime))
+            {
+                return false;
+            }
+            Thread.Sleep(SasSignatureRetryTime);
+            return true;
+        }
     }
 }

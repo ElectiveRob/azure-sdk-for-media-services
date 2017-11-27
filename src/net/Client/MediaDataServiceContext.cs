@@ -71,7 +71,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             _clientRequestIdAdapter.ChangeCurrentRequestId();
             IQueryable<TIinterface> inner = (IQueryable<TIinterface>)_dataContext.CreateQuery<TData>(entitySetName);
-            var result = new MediaQueryable<TIinterface, TData>(inner, _queryRetryPolicy);
+            var syncInner = new SyncMediaQueryable<TIinterface, TData>(inner, _queryRetryPolicy);
+            var result = new MediaQueryable<TIinterface, TData>(syncInner, _queryRetryPolicy);
             return result;
         }
 
