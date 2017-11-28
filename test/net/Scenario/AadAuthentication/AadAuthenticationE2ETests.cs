@@ -18,6 +18,7 @@ using System;
 using System.Configuration;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.AadAuthentication
 {
@@ -29,7 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.AadAuthentication
         [TestInitialize]
         public void SetupTest()
         {
-            _mediaServicesApiServerUri = new Uri(ConfigurationManager.AppSettings["MediaServicesAccountCustomApiServerEndpoint"]);
+            _mediaServicesApiServerUri = new Uri(WindowsAzureMediaServicesTestConfiguration.MediaServicesAccountCustomApiServerEndpoint);
         }
 
         /// <summary>
@@ -41,8 +42,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.AadAuthentication
         [Owner("ClientSDK")]
         public void TestUserCredential()
         {
-            var environment = GetSelfDefinedEnvironment();
-            var tokenCredentials = new AzureAdTokenCredentials(ConfigurationManager.AppSettings["UserTenant"], environment);
+            var environment = WindowsAzureMediaServicesTestConfiguration.GetSelfDefinedEnvironment();
+            var tokenCredentials = new AzureAdTokenCredentials(WindowsAzureMediaServicesTestConfiguration.UserTenant, environment);
             var tokenProvider = new AzureAdTokenProvider(tokenCredentials);
 
             var mediaContext = new CloudMediaContext(_mediaServicesApiServerUri, tokenProvider);
@@ -54,11 +55,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.AadAuthentication
         [Owner("ClientSDK")]
         public void TestServicePrincipalWithClientSymmetricKey()
         {
-            var clientId = ConfigurationManager.AppSettings["ClientIdForAdAuth"];
-            var clientSecret = ConfigurationManager.AppSettings["ClientSecretForAdAuth"];
+            var clientId = WindowsAzureMediaServicesTestConfiguration.ClientIdForAdAuth;
+            var clientSecret = WindowsAzureMediaServicesTestConfiguration.ClientSecretForAdAuth;
 
-            var environment = GetSelfDefinedEnvironment();
-            var tokenCredentials = new AzureAdTokenCredentials(ConfigurationManager.AppSettings["UserTenant"], new AzureAdClientSymmetricKey(clientId, clientSecret), environment);
+            var environment = WindowsAzureMediaServicesTestConfiguration.GetSelfDefinedEnvironment();
+            var tokenCredentials = new AzureAdTokenCredentials(WindowsAzureMediaServicesTestConfiguration.UserTenant, new AzureAdClientSymmetricKey(clientId, clientSecret), environment);
             var tokenProvider = new AzureAdTokenProvider(tokenCredentials);
 
             var mediaContext = new CloudMediaContext(_mediaServicesApiServerUri, tokenProvider);
@@ -70,24 +71,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.AadAuthentication
         [Owner("ClientSDK")]
         public void TestServicePrincipalWithClientCertificate()
         {
-            var clientId = ConfigurationManager.AppSettings["ClientIdForAdAuth"];
+            var clientId = WindowsAzureMediaServicesTestConfiguration.ClientIdForAdAuth;
             var clientCertificateThumbprint = ConfigurationManager.AppSettings["ClientCertificateThumbprintForAdAuth"];
 
-            var environment = GetSelfDefinedEnvironment();
+            var environment = WindowsAzureMediaServicesTestConfiguration.GetSelfDefinedEnvironment();
             var tokenCredentials = new AzureAdTokenCredentials(ConfigurationManager.AppSettings["UserTenant"], new AzureAdClientCertificate(clientId, clientCertificateThumbprint), environment);
 
             var tokenProvider = new AzureAdTokenProvider(tokenCredentials);
             var mediaContext = new CloudMediaContext(_mediaServicesApiServerUri, tokenProvider);
             mediaContext.Assets.FirstOrDefault();
-        }
-
-        private static AzureEnvironment GetSelfDefinedEnvironment()
-        {
-            return new AzureEnvironment(
-                new Uri(ConfigurationManager.AppSettings["ActiveDirectoryEndpoint"]),
-                ConfigurationManager.AppSettings["MediaServicesResource"],
-                ConfigurationManager.AppSettings["MediaServicesSdkClientId"],
-                new Uri(ConfigurationManager.AppSettings["MediaServicesSdkRedirectUri"]));
         }
     }
 }

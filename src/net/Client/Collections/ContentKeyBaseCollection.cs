@@ -233,7 +233,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The content key.</returns>
         internal static ContentKeyData InitializeFairPlayPfxPassword(Guid keyId, byte[] contentKey, string name, X509Certificate2 cert)
         {
-            RSACryptoServiceProvider rsaPublicKey = cert.PublicKey.Key as RSACryptoServiceProvider;
+            AsymmetricAlgorithm rsaPublicKey = cert.PublicKey.Key;
 
             RSAOAEPKeyExchangeFormatter keyFormatter = new RSAOAEPKeyExchangeFormatter(rsaPublicKey);
 

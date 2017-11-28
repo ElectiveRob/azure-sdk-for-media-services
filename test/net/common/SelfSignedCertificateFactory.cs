@@ -32,8 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         {
             byte[] rawData = CreatePfxWithSelfSignedCertificate(keyLength, start, end);
 
-            X509Certificate2 certToReturn = new X509Certificate2();
-            certToReturn.Import(rawData);
+            X509Certificate2 certToReturn = new X509Certificate2(rawData);
 
             return certToReturn;
         }

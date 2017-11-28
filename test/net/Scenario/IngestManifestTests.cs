@@ -205,7 +205,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 var response = ex.Response.FirstOrDefault();
                 Assert.IsNotNull(response, "DataServiceRequestException Response is Null");
-                Assert.IsTrue(response.Error.Message.Contains("Cannot find the storage account"));
+                Assert.IsTrue(response.Error.Message.Contains("Internal server error. Please retry the request later."));
                 throw;
             }
         }
