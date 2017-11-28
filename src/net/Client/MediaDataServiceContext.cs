@@ -41,8 +41,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             _dataContext = dataContext;
             _queryRetryPolicy = queryRetryPolicy;
             _clientRequestIdAdapter = clientRequestAdapter;
-
         }
+
+        /// <summary>
+        /// Returns base url to make an absolute path for request url. It is temporaty solution, until bug in System.Uri is fixed
+        /// https://github.com/dotnet/corefx/issues/25548
+        /// </summary>
+        public Uri BaseUri => _dataContext.BaseUri;
 
         /// <summary>
         /// Gets or sets whether an exception is raised when a 404 error (resource not found) is returned by the data service.

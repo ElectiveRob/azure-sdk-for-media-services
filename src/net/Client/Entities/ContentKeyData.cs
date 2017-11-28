@@ -221,7 +221,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                     MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy(dataContext as IRetryPolicyAdapter);
 
-                    Uri uriGetKeyDeliveryUrl = new Uri(string.Format(CultureInfo.InvariantCulture, "/ContentKeys('{0}')/GetKeyDeliveryUrl", this.Id), UriKind.Relative);
+                    Uri baseUri = (dataContext as MediaDataServiceContext)?.BaseUri;
+
+                    Uri uriGetKeyDeliveryUrl = new Uri(string.Format(CultureInfo.InvariantCulture, (baseUri?.ToString() ?? string.Empty) + "/ContentKeys('{0}')/GetKeyDeliveryUrl", this.Id), UriKind.Absolute);
 
                     BodyOperationParameter keyDeliveryTypeParameter = new BodyOperationParameter("keyDeliveryType", (int)contentKeyDeliveryType);
 
