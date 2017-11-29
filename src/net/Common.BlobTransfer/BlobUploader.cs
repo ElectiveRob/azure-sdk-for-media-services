@@ -54,7 +54,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             SetConnectionLimits(url, numberOfConcurrentTransfers);
             return Task.Factory.StartNew(
-                () => 
+                () =>
                 UploadFileToBlob(
                     cancellationToken,
                     url,
@@ -72,7 +72,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
 
-        private void UploadFileToBlob(
+        private async void UploadFileToBlob(
             CancellationToken cancellationToken,
             Uri uri,
             string name,
@@ -97,7 +97,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     ServerTimeout = TimeSpan.FromSeconds(90)
                 };
 
-                CloudBlockBlob blob = GetCloudBlockBlob(uri, client, subDirectory, name, contentType, getSharedAccessSignature);
+                CloudBlockBlob blob = GetCloudBlockBlob(uri, client, subDirectory, name, contentType, retryPolicy, getSharedAccessSignature);
 
                 transferContext.Length = stream.Length;
                 transferContext.LocalFilePath = name;
@@ -106,7 +106,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 transferContext.FileEncryption = fileEncryption;
                 if (stream.Length == 0)
                 {
-                    blob.UploadFromByteArrayAsync(new byte[1], 0, 0, null, blobRequestOptions, null).Wait();
+                    blob.UploadFromByteArrayAsync(new byte[1], 0, 0, null, blobRequestOptions, null, cancellationToken).Wait(cancellationToken);
                 }
                 else if (stream.Length < cloudBlockBlobUploadDownloadSizeLimit)
                 {
@@ -127,7 +127,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                         using (var uploadMemoryStream = new MemoryStream(fileContent))
                         {
-                            blob.UploadFromStreamAsync(uploadMemoryStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext).Wait();
+                            blob.UploadFromStreamAsync(uploadMemoryStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext, cancellationToken: cancellationToken).Wait();
                         }
                     }
                     InvokeProgressCallback(transferContext, stream.Length, stream.Length);
@@ -188,12 +188,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private static CloudBlockBlob GetCloudBlockBlob(
+        private CloudBlockBlob GetCloudBlockBlob(
             Uri uri,
             CloudBlobClient client,
             string subFolder,
             string localFile,
             string contentType,
+            IRetryPolicy retryPolicy,
             Func<string> getSharedAccessSignature)
         {
             CloudBlobContainer blobContainer = null;
@@ -218,6 +219,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string blobFileName = Path.Combine(subFolder, Path.GetFileName(localFile));
             blob = blobContainer.GetBlockBlobReference(blobFileName);
             blob.Properties.ContentType = contentType;
+
+            BlobPolicyActivationWait(() => blob.OpenWriteAsync(null, new BlobRequestOptions() { RetryPolicy = retryPolicy }, null).Result.CommitAsync().Wait());
+
             return blob;
         }
 

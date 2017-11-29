@@ -608,11 +608,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                         locator = this.GetMediaContext().Locators.CreateSasLocator(this.Asset, accessPolicy);
                         cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
-
+                        
                         return locator;
                     },
-                    cancellationToken).
-                ContinueWith(
+                    cancellationToken)
+                .ContinueWith(
                     t =>
                     {
                         locator = t.Result;

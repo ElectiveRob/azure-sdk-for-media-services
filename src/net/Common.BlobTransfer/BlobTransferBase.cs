@@ -32,7 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const int SpeedCalculatorCapacity = 100;
         private const int MaxSasSignatureRetry = 30;
         private readonly TimeSpan SasSignatureRetryTime = TimeSpan.FromSeconds(1);
-        private readonly TimeSpan SasPolicyActivationMaxTime = TimeSpan.FromSeconds(30);
+        private readonly TimeSpan SasPolicyActivationMaxTime = TimeSpan.FromSeconds(60);
         private readonly TimeSpan SasPolicyActivationMaxTimeThreshold = TimeSpan.FromSeconds(5);
         private readonly BlobTransferSpeedCalculator _uploadDownloadSpeedCalculator =
             new BlobTransferSpeedCalculator(SpeedCalculatorCapacity);
