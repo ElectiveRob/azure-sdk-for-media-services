@@ -145,7 +145,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         FileShare.Read
                         ))
                     {
-                        blob.DownloadToStreamAsync(fileStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext).Wait();
+                        blob.DownloadToStreamAsync(fileStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext, cancellationToken: cancellationToken).Wait(cancellationToken);
                         if (fileEncryption != null)
                         {
                             using (MemoryStream msDecrypt = new MemoryStream())
