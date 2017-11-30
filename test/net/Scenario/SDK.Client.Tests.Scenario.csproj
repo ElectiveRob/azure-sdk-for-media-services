@@ -28,7 +28,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.KeyVault.Core" Version="2.0.4" />
+    <PackageReference Include="Microsoft.Azure.KeyVault.Core" Version="2.0.5-preview" />
     <PackageReference Include="Microsoft.Data.Services.Client" Version="5.8.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.17.2" />
@@ -40,7 +40,6 @@
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0-preview1-25914-04" />
-    <PackageReference Include="TransientFaultHandling.Core" Version="5.1.1209.1" />
     <PackageReference Include="WindowsAzure.Storage" Version="8.6.0" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +47,9 @@
     <ProjectReference Include="..\common\SDK.Client.Tests.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="amscer.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Configuration\AudioEncodingPreset.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

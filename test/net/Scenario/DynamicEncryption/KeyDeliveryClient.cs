@@ -18,7 +18,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Microsoft.Practices.TransientFaultHandling;
+using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.DynamicEncryption
 {

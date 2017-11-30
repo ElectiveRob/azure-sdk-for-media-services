@@ -20,7 +20,7 @@ using System.Data.Services.Client;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using Microsoft.Practices.TransientFaultHandling;
+using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {

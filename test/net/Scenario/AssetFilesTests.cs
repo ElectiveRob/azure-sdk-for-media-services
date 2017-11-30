@@ -259,7 +259,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyAndDownloadAssetFileNTimes(assetFile, asset,100,0,true);
         }
         [TestMethod]
-        [Timeout(120000)]
+        [Timeout(150000)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [ExpectedException(typeof(StorageException))]
         public void ShouldThrowForbiddenExceptionWhenExpired()

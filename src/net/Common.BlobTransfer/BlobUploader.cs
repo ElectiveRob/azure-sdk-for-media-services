@@ -72,7 +72,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
 
-        private async void UploadFileToBlob(
+        private void UploadFileToBlob(
             CancellationToken cancellationToken,
             Uri uri,
             string name,
