@@ -70,17 +70,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         // media processor versions
         public static string GetWamePreset(IMediaProcessor mediaProcessor)
         {
-            var mpVersion = new Version(mediaProcessor.Version);
-            if (mpVersion.Major == 1)
-            {
-                return WameV1Preset;
-            }
-            else
-            {
-                return WameV2Preset;
-            }
+            return "Adaptive Streaming";
         }
-
 
         public static void VerifyAllTasksFinished(string jobId)
         {
@@ -139,8 +130,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             var refreshed = _mediaContext.Jobs.Where(c => c.Id == jobfromTemplate.Id).FirstOrDefault();
             Assert.IsNotNull(refreshed);
-
-
         }
 
         [TestMethod]
@@ -161,7 +150,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                  {
                      Thread.Sleep(100);
                      double progress = job.Tasks[0].Progress;
-                     if (progress > 0 && progress < 100)
+                     if (progress > 0 && progress <= 100)
                      {
                          progressChanged = true;
                      }
@@ -172,10 +161,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             task.ThrowIfFaulted();
             Assert.AreEqual(JobState.Finished, job.State);
             Assert.IsTrue(progressChanged, "Task progress has not been changed while job is expected to be finished");
-
         }
-
-
 
         [TestMethod]
         [TestCategory("ClientSDK")]
@@ -219,6 +205,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
@@ -309,7 +296,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
         }
 
-
         [TestMethod]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
@@ -349,6 +335,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Thumbnail.xml", "Media")]
@@ -363,6 +350,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\ThumbnailWithZeroStep.xml", "Media")]
@@ -377,6 +365,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
@@ -412,6 +401,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
@@ -452,6 +442,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
@@ -485,6 +476,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
@@ -576,6 +568,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
@@ -606,6 +599,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
         
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Thumbnail.txt", "Configuration")]
@@ -643,6 +637,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Thumbnail.txt", "Configuration")]
@@ -675,6 +670,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Thumbnail.txt", "Configuration")]
@@ -712,6 +708,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
@@ -738,6 +735,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Thumbnail.xml", "Media")]
@@ -765,6 +763,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Thumbnail.xml", "Media")]
@@ -790,6 +789,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Packager deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]
@@ -805,6 +805,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\AudioEncodingPreset.xml", "Configuration")]
@@ -819,6 +820,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\PlayReady Protection.xml", "Configuration")]
@@ -877,6 +879,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\PlayReady Protection_ContentKey.xml", "Configuration")]
@@ -902,6 +905,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [Priority(0)]
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Packager deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
@@ -920,6 +924,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [Priority(1)]
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Packager deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml", "Configuration")]
@@ -938,6 +943,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
@@ -974,6 +980,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]
@@ -994,6 +1001,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\PlayReady Protection.xml", "Configuration")]
@@ -1011,6 +1019,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Legacy preset
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\EncodePlusEncryptWithEE.xml", "Media")]
@@ -1104,6 +1113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Packager deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]

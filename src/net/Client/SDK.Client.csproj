@@ -4,12 +4,13 @@
 	<ProjectGuid>{E194B46E-9063-4CFA-85FC-51E5AAD55586}</ProjectGuid>
 	<RootNamespace>Microsoft.WindowsAzure.MediaServices.Client</RootNamespace>
 	<AssemblyName>Microsoft.WindowsAzure.MediaServices.Client</AssemblyName>
-	<Version>4.1.0.0</Version>
+	<Version>4.2.0.0</Version>
 	<NeutralLanguage>en-US</NeutralLanguage>
 	<Company>Microsoft</Company>
 	<Product>Windows Azure Media Services</Product>
 	<Copyright>Copyright © 2012 Microsoft Corp.</Copyright>
 	<Authors />
+	<AssemblyVersion>4.2.0.0</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Common\**" />

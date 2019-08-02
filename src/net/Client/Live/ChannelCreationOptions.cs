@@ -45,6 +45,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public ChannelInput Input { get; set; }
 
         /// <summary>
+        /// Gets or sets state of the channel.
+        /// </summary>
+        public ChannelState State { get; set; }
+
+        /// <summary>
         /// Gets or sets the channel preview properties.
         /// </summary>
         public ChannelPreview Preview { get; set; }
@@ -63,6 +68,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the channel encoding type property.
         /// </summary>
         public ChannelEncodingType EncodingType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel vanity url property.
+        /// </summary>
+        public bool VanityUrl { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the channel slate.
