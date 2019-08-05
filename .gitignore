@@ -69,3 +69,4 @@ test/net/Scenario/App.Release.config
 /SDK.Client.sln.GhostDoc.xml
 /test/net/Scenario/App.Stage.config
 /test/net/Scenario/App.LKG.config
+.vs/
